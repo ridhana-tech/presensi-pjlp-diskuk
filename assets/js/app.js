@@ -7,6 +7,7 @@ import {
 } from './auth.js';
 
 import { initializeDashboard } from './dashboard.js';
+import { initializePJLPDashboard } from './pjlp-dashboard.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
   initializeLogin();
@@ -60,12 +61,6 @@ function initializeLogin() {
         expiresAt: result.expiresAt
       });
 
-      if (result.user.role !== 'Admin') {
-        throw new Error(
-          'Dashboard untuk role ini belum tersedia pada tahap pengembangan.'
-        );
-      }
-
       await openDashboard(result.user);
 
     } catch (error) {
@@ -110,15 +105,6 @@ async function checkExistingSession() {
       return;
     }
 
-    if (user.role !== 'Admin') {
-      showLoginPage();
-      showMessage(
-        'Dashboard untuk role ini belum tersedia.',
-        'error'
-      );
-      return;
-    }
-
     console.log('Session aktif:', {
       username: user.username,
       role: user.role
@@ -144,12 +130,32 @@ async function checkExistingSession() {
 ===================================================== */
 
 async function openDashboard(user) {
+  const role = String(user?.role || '').trim().toUpperCase();
+
   document.getElementById('loginPage').hidden = true;
   document.getElementById('dashboardPage').hidden = false;
 
-  await initializeDashboard(user, handleLogout);
+  try {
+    if (role === 'ADMIN') {
+      await initializeDashboard(user, handleLogout);
+    } else if (role === 'PJLP') {
+      await initializePJLPDashboard(user, handleLogout);
+    } else {
+      throw new Error(
+        role === 'ATASAN'
+          ? 'Dashboard Atasan belum tersedia.'
+          : 'Role pengguna tidak dikenali.'
+      );
+    }
 
-  hideLoading();
+    hideLoading();
+  } catch (error) {
+    document.getElementById('dashboardPage').hidden = true;
+    document.getElementById('dashboardRoot').innerHTML = '';
+    clearLocalSession();
+    showLoginPage();
+    throw error;
+  }
 }
 
 
