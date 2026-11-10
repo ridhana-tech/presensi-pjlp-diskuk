@@ -1,6 +1,7 @@
 
 import { showDataPJLP } from './modules/pjlp.js';
 import { showDataAtasan } from './modules/atasan.js';
+import { showDataLokasi } from './modules/lokasi.js';
 
 const ADMIN_MENUS = [
   { id: 'dashboard', label: 'Dashboard', icon: 'bi-grid-1x2' },
@@ -14,7 +15,7 @@ const ADMIN_MENUS = [
   { id: 'laporan', label: 'Laporan', icon: 'bi-file-earmark-bar-graph' },
   { id: 'pengguna', label: 'Pengguna & Akun', icon: 'bi-person-lock' },
   { id: 'konfigurasi', label: 'Konfigurasi', icon: 'bi-gear' },
-  { id: 'aktivitas', label: 'Log Aktivitas', icon: 'bi-clock-history' }
+  { id: 'aktivitas', label: 'Log Aktivitas', icon: 'bi-clock-history' },
 ];
 
 let currentDashboardUser = null;
@@ -356,6 +357,9 @@ export async function initializeDashboard(user, onLogout) {
 
         } else if (moduleId === 'atasan') {
         showDataAtasan(root);
+
+        } else if (moduleId === 'lokasi') {
+        showDataLokasi(root);
 
         } else {
         showModulePlaceholder(root, moduleId);
