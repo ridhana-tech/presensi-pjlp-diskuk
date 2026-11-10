@@ -346,45 +346,55 @@ export async function initializeDashboard(user, onLogout) {
 
 
   // Navigasi menu
-  root.querySelectorAll('[data-module]').forEach(button => {
-    button.addEventListener('click', () => {
-      const moduleId = button.dataset.module;
+  
+// Navigasi menu
+root.querySelectorAll('[data-module]').forEach(button => {
+  button.addEventListener('click', () => {
+    const moduleId = button.dataset.module;
 
-      if (moduleId === 'dashboard') {
-        showDashboardHome(root);
+    // Container khusus isi halaman
+    const content = root.querySelector('#adminContent');
 
-        } else if (moduleId === 'pjlp') {
-        showDataPJLP(root);
+    if (moduleId === 'dashboard') {
+      showDashboardHome(root);
 
-        } else if (moduleId === 'atasan') {
-        showDataAtasan(root);
+    } else if (moduleId === 'pjlp') {
+      showDataPJLP(content);
 
-        } else if (moduleId === 'lokasi') {
-        showDataLokasi(root);
-        
-        } else if (moduleId === 'jadwal') {
-        showDataJadwal(root);
-        
-        } else {
-        showModulePlaceholder(root, moduleId);
-        }
+    } else if (moduleId === 'atasan') {
+      showDataAtasan(content);
 
-      root.querySelectorAll('[data-module]').forEach(item => {
-        item.classList.toggle(
-          'active',
-          item.dataset.module === moduleId
-        );
-      });
+    } else if (moduleId === 'lokasi') {
+      showDataLokasi(content);
 
-      const title = moduleId === 'dashboard'
-        ? 'Dashboard'
-        : MODULE_INFO[moduleId]?.title || 'Dashboard';
+    } else if (moduleId === 'jadwal') {
+      showDataJadwal(content);
 
-      document.getElementById('breadcrumbTitle').textContent = title;
+    } else {
+      showModulePlaceholder(root, moduleId);
+    }
 
-      document.getElementById('adminSidebar').classList.remove('sidebar-open');
+    // Active menu
+    root.querySelectorAll('[data-module]').forEach(item => {
+      item.classList.toggle(
+        'active',
+        item.dataset.module === moduleId
+      );
     });
+
+    // Breadcrumb
+    const title = moduleId === 'dashboard'
+      ? 'Dashboard'
+      : MODULE_INFO[moduleId]?.title || 'Dashboard';
+
+    document.getElementById('breadcrumbTitle').textContent = title;
+
+    // Tutup sidebar mobile
+    document.getElementById('adminSidebar')
+      .classList.remove('sidebar-open');
   });
+});
+
 
 
   // Toggle sidebar mobile
