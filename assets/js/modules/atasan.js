@@ -176,6 +176,11 @@ export async function showDataAtasan(root) {
   const modalTambah = content.querySelector('#modalTambahAtasan');
   const modalDetail = content.querySelector('#modalDetailAtasan');
 
+  detailModalBox.style.width = '850px';
+  detailModalBox.style.maxWidth = '95vw';
+  detailModalBox.style.maxHeight = '90vh';
+  detailModalBox.style.overflowY = 'auto';
+
   const formTambah = content.querySelector('#formTambahAtasan');
   const btnSimpan = content.querySelector('#btnSimpanAtasan');
 
