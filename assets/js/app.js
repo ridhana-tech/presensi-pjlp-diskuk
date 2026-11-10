@@ -129,17 +129,22 @@ async function checkExistingSession() {
    3. BUKA DASHBOARD
 ===================================================== */
 
-async function openDashboard(user) {
-  const role = String(user?.role || '').trim().toUpperCase();
 
-  document.getElementById('loginPage').hidden = true;
-  document.getElementById('dashboardPage').hidden = false;
+async function openDashboard(user) {
+  const role = String(user?.role || '')
+    .trim()
+    .toUpperCase();
 
   try {
+    document.getElementById('loginPage').hidden = true;
+    document.getElementById('dashboardPage').hidden = false;
+
     if (role === 'ADMIN') {
       await initializeDashboard(user, handleLogout);
+
     } else if (role === 'PJLP') {
       await initializePJLPDashboard(user, handleLogout);
+
     } else {
       throw new Error(
         role === 'ATASAN'
@@ -148,15 +153,20 @@ async function openDashboard(user) {
       );
     }
 
-    hideLoading();
   } catch (error) {
     document.getElementById('dashboardPage').hidden = true;
     document.getElementById('dashboardRoot').innerHTML = '';
+
     clearLocalSession();
     showLoginPage();
+
     throw error;
+
+  } finally {
+    hideLoading();
   }
 }
+
 
 
 /* =====================================================
