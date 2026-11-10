@@ -1,16 +1,25 @@
 
-import { loginUser, validateSession } from './auth.js';
+import {
+  loginUser,
+  validateSession,
+  logoutUser,
+  clearLocalSession
+} from './auth.js';
 
-document.addEventListener('DOMContentLoaded', () => {
+import { initializeDashboard } from './dashboard.js';
+
+document.addEventListener('DOMContentLoaded', async () => {
   initializeLogin();
   initializePasswordToggle();
-  checkExistingSession();
+
+  await checkExistingSession();
 });
 
 
-/**
- * Proses form login.
- */
+/* =====================================================
+   1. LOGIN
+===================================================== */
+
 function initializeLogin() {
   const form = document.getElementById('loginForm');
 
@@ -28,35 +37,22 @@ function initializeLogin() {
       .value;
 
     if (!username || !password) {
-      showMessage(
-        'Username dan password wajib diisi.',
-        'error'
-      );
+      showMessage('Username dan password wajib diisi.', 'error');
       return;
     }
 
-    const submitButton = form.querySelector(
-      'button[type="submit"]'
-    );
+    const button = document.getElementById('loginButton');
+    const buttonText = document.getElementById('loginButtonText');
 
-    const originalText = submitButton
-      ? submitButton.textContent
-      : '';
+    const originalText = buttonText.textContent;
 
     try {
-      if (submitButton) {
-        submitButton.disabled = true;
-        submitButton.textContent = 'Memproses...';
-      }
+      button.disabled = true;
+      buttonText.textContent = 'Memproses...';
 
       showMessage('Sedang memverifikasi akun...', 'success');
 
       const result = await loginUser(username, password);
-
-      showMessage(
-        `Login berhasil. Selamat datang, ${result.user.username}.`,
-        'success'
-      );
 
       console.log('Login berhasil:', {
         username: result.user.username,
@@ -64,7 +60,13 @@ function initializeLogin() {
         expiresAt: result.expiresAt
       });
 
-      // Dashboard akan diintegrasikan pada tahap berikutnya.
+      if (result.user.role !== 'Admin') {
+        throw new Error(
+          'Dashboard untuk role ini belum tersedia pada tahap pengembangan.'
+        );
+      }
+
+      await openDashboard(result.user);
 
     } catch (error) {
       showMessage(
@@ -72,48 +74,152 @@ function initializeLogin() {
         'error'
       );
 
-    } finally {
-      if (submitButton) {
-        submitButton.disabled = false;
-        submitButton.textContent = originalText;
+      // Jika login berhasil tetapi dashboard belum tersedia
+      // untuk role pengguna, session lokal dibersihkan.
+      if (
+        error.message?.includes('Dashboard untuk role')
+      ) {
+        clearLocalSession();
       }
+
+    } finally {
+      button.disabled = false;
+      buttonText.textContent = originalText;
     }
   });
 }
 
 
-/**
- * Periksa session yang masih aktif.
- */
+/* =====================================================
+   2. VALIDASI SESSION
+===================================================== */
+
 async function checkExistingSession() {
   const token = localStorage.getItem('pjlp_session_token');
 
-  if (!token) return;
+  if (!token) {
+    showLoginPage();
+    return;
+  }
 
   try {
     const user = await validateSession();
 
-    if (user) {
-      showMessage(
-        `Session aktif. Selamat datang kembali, ${user.username}.`,
-        'success'
-      );
-
-      console.log('Session aktif:', {
-        username: user.username,
-        role: user.role
-      });
+    if (!user) {
+      showLoginPage();
+      return;
     }
+
+    if (user.role !== 'Admin') {
+      showLoginPage();
+      showMessage(
+        'Dashboard untuk role ini belum tersedia.',
+        'error'
+      );
+      return;
+    }
+
+    console.log('Session aktif:', {
+      username: user.username,
+      role: user.role
+    });
+
+    await openDashboard(user);
 
   } catch (error) {
     console.error('Validasi session gagal:', error);
+
+    showLoginPage();
+
+    showMessage(
+      'Tidak dapat memverifikasi session. Periksa koneksi internet lalu coba login kembali.',
+      'error'
+    );
   }
 }
 
 
-/**
- * Tampilkan/sembunyikan password.
- */
+/* =====================================================
+   3. BUKA DASHBOARD
+===================================================== */
+
+async function openDashboard(user) {
+  document.getElementById('loginPage').hidden = true;
+  document.getElementById('dashboardPage').hidden = false;
+
+  await initializeDashboard(user, handleLogout);
+
+  hideLoading();
+}
+
+
+/* =====================================================
+   4. LOGOUT
+===================================================== */
+
+async function handleLogout() {
+  const confirmed = window.confirm(
+    'Apakah Anda yakin ingin keluar dari aplikasi?'
+  );
+
+  if (!confirmed) return;
+
+  try {
+    await logoutUser();
+
+    console.log('Logout berhasil.');
+
+    document.getElementById('dashboardPage').hidden = true;
+
+    const root = document.getElementById('dashboardRoot');
+    root.innerHTML = '';
+
+    document.getElementById('loginForm').reset();
+
+    showLoginPage();
+
+    showMessage('Anda berhasil keluar dari aplikasi.', 'success');
+
+  } catch (error) {
+    console.error('Logout gagal:', error);
+
+    alert(
+      error.message ||
+      'Logout gagal. Silakan coba kembali.'
+    );
+  }
+}
+
+
+/* =====================================================
+   5. TAMPILAN LOGIN
+===================================================== */
+
+function showLoginPage() {
+  document.getElementById('dashboardPage').hidden = true;
+  document.getElementById('loginPage').hidden = false;
+
+  hideLoading();
+}
+
+
+/* =====================================================
+   6. LOADING
+===================================================== */
+
+function hideLoading() {
+  const loading = document.getElementById('appLoading');
+
+  if (loading) {
+    loading.hidden = true;
+  }
+}
+
+
+/* =====================================================
+   7. TOGGLE PASSWORD
+===================================================== */
+
 function initializePasswordToggle() {
   const input = document.getElementById('password');
   const button = document.getElementById('togglePassword');
@@ -137,9 +243,10 @@ function initializePasswordToggle() {
 }
 
 
-/**
- * Menampilkan pesan login.
- */
+/* =====================================================
+   8. PESAN LOGIN
+===================================================== */
+
 function showMessage(message, type) {
   const element = document.getElementById('loginMessage');
 

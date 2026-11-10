@@ -15,11 +15,21 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
   <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/dashboard.css">
 </head>
 
 <body>
 
-  <main class="login-page">
+  <!-- LOADING AWAL -->
+  <div id="appLoading" class="app-loading">
+    <div class="loading-content">
+      <div class="loading-spinner"></div>
+      <p>Memeriksa sesi pengguna...</p>
+    </div>
+  </div>
+
+  <!-- HALAMAN LOGIN -->
+  <main class="login-page" id="loginPage" hidden>
 
     <section class="login-container">
 
@@ -113,6 +123,11 @@
     </section>
 
   </main>
+
+  <!-- DASHBOARD -->
+  <div id="dashboardPage" hidden>
+    <div id="dashboardRoot"></div>
+  </div>
 
   <script type="module" src="assets/js/app.js"></script>
 
