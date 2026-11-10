@@ -1,6 +1,7 @@
 
 import { apiRequest } from '../api.js';
 import { APP_CONFIG } from '../config.js';
+import { openPJLPDetail } from './pjlp-detail.js';
 
 export async function showDataPJLP(root) {
   const content = root.querySelector('#adminContent');
@@ -290,6 +291,17 @@ export async function showDataPJLP(root) {
 
     renderTable(filtered);
   });
+
+    // Event tombol Detail PJLP
+    tbody.addEventListener('click', event => {
+    const button = event.target.closest('.btn-detail-pjlp');
+
+    if (!button) return;
+
+    const idPJLP = button.dataset.id;
+
+    openPJLPDetail(idPJLP, muatDataPJLP);
+    });
 
   form.addEventListener('submit', async event => {
     event.preventDefault();
