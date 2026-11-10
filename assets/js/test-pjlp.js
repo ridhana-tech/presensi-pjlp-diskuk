@@ -42,8 +42,26 @@ async function testEndpoint(action, extraData = {}) {
   }
 }
 
+
 window.testDataPJLP = {
-  tampil: () => testEndpoint('getDataPJLP')
+  tampil: () => testEndpoint('getDataPJLP'),
+
+  tambah: () => testEndpoint('tambahDataPJLP', {
+    data: {
+      Nama_Pegawai: 'TEST PJLP',
+      NIK: String(Date.now()).padStart(16, '9'),
+      Jenis_Kelamin: 'Laki-laki',
+      Tempat_Lahir: 'Karanganyar',
+      Tanggal_Lahir: '1995-01-01',
+      Alamat: 'Alamat pengujian',
+      No_HP: '080000000000',
+      Jabatan: 'Tenaga Kebersihan',
+      ID_Atasan: '',
+      Tanggal_Mulai_Kerja: '2026-11-10',
+      Foto_Profil_ID_Lampiran: '',
+      Catatan: 'DATA UJI - HAPUS SETELAH PENGUJIAN'
+    }
+  })
 };
 
 
