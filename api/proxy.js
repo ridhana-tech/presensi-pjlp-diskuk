@@ -27,7 +27,11 @@ module.exports = async (req, res) => {
     const allowedActions = [
       'login',
       'validateSession',
-      'logout'
+      'logout',
+      'getDataPJLP',
+      'getDetailPJLP',
+      'tambahDataPJLP',
+      'ubahDataPJLP'
     ];
 
     if (!allowedActions.includes(payload.action)) {
