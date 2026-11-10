@@ -1,4 +1,6 @@
 
+import { showDataPJLP } from './modules/pjlp.js';
+
 const ADMIN_MENUS = [
   { id: 'dashboard', label: 'Dashboard', icon: 'bi-grid-1x2' },
   { id: 'pjlp', label: 'Data PJLP', icon: 'bi-people' },
@@ -347,6 +349,10 @@ export async function initializeDashboard(user, onLogout) {
 
       if (moduleId === 'dashboard') {
         showDashboardHome(root);
+
+      } else if (moduleId === 'pjlp') {
+        showDataPJLP(root);
+
       } else {
         showModulePlaceholder(root, moduleId);
       }
