@@ -2,6 +2,7 @@
 import { showDataPJLP } from './modules/pjlp.js';
 import { showDataAtasan } from './modules/atasan.js';
 import { showDataLokasi } from './modules/lokasi.js';
+import { showDataJadwal } from './modules/jadwal.js';
 
 const ADMIN_MENUS = [
   { id: 'dashboard', label: 'Dashboard', icon: 'bi-grid-1x2' },
@@ -44,7 +45,7 @@ const MODULE_INFO = {
   },
   jadwal: {
     title: 'Jadwal Kerja',
-    description: 'Pengaturan jadwal kerja dan penempatan PJLP.'
+    description: 'Pengelolaan master jadwal dan jam kerja PJLP.'
   },
   logbook: {
     title: 'Logbook',
@@ -360,7 +361,10 @@ export async function initializeDashboard(user, onLogout) {
 
         } else if (moduleId === 'lokasi') {
         showDataLokasi(root);
-
+        
+        } else if (moduleId === 'jadwal') {
+        showDataJadwal(root);
+        
         } else {
         showModulePlaceholder(root, moduleId);
         }
