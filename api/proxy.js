@@ -31,7 +31,8 @@ module.exports = async (req, res) => {
       'getDataPJLP',
       'getDetailPJLP',
       'tambahDataPJLP',
-      'ubahDataPJLP'
+      'ubahDataPJLP',
+      'uploadFotoProfil'
     ];
 
     if (!allowedActions.includes(payload.action)) {

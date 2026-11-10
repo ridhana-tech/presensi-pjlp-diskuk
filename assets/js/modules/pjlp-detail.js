@@ -51,6 +51,23 @@ function getResponseData(result) {
   return response.data;
 }
 
+
+async function fileToBase64(file) {
+  const dataUrl = await new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(
+      new Error('Gagal membaca file foto.')
+    );
+
+    reader.readAsDataURL(file);
+  });
+
+  return String(dataUrl).split(',')[1];
+}
+
+
 function renderInput(field, value) {
   const safeValue = escapeHTML(value);
 
@@ -125,10 +142,17 @@ export async function openPJLPDetail(idPJLP, onUpdated) {
   document.body.appendChild(modal);
   document.body.style.overflow = 'hidden';
 
+  let fotoPreviewUrl = null;
+  
   function closeModal() {
-    modal.remove();
-    document.body.style.overflow = '';
+  if (fotoPreviewUrl) {
+    URL.revokeObjectURL(fotoPreviewUrl);
+    fotoPreviewUrl = null;
   }
+
+  modal.remove();
+  document.body.style.overflow = '';
+}
 
   modal.querySelector('#closeDetailPJLP')
     .addEventListener('click', closeModal);
@@ -149,38 +173,173 @@ export async function openPJLPDetail(idPJLP, onUpdated) {
 
     const detailContent = modal.querySelector('.pjlp-detail-content');
 
-    function showDetail() {
-      detailContent.innerHTML = `
-        <div class="pjlp-detail-grid">
-          <div class="pjlp-detail-item pjlp-detail-full">
-            <span>ID PJLP</span>
-            <strong>${escapeHTML(record.ID_PJLP)}</strong>
-          </div>
+    
+function showDetail() {
+  const fotoHTML = fotoPreviewUrl
+    ? `<img src="${fotoPreviewUrl}" class="pjlp-profile-preview" alt="Foto PJLP">`
+    : `<div class="pjlp-profile-placeholder">
+         <span>Foto Profil</span>
+       </div>`;
 
-          ${FIELD_CONFIG.map(field => `
-            <div class="pjlp-detail-item ${field.type === 'textarea' ? 'pjlp-detail-full' : ''}">
-              <span>${escapeHTML(field.label)}</span>
-              <strong>${escapeHTML(record[field.key] || '-')}</strong>
-            </div>
-          `).join('')}
+  detailContent.innerHTML = `
+    <div class="pjlp-profile-section">
+      ${fotoHTML}
+
+      <div class="pjlp-profile-info">
+        <strong>${escapeHTML(record.Nama_Pegawai)}</strong>
+        <span>${escapeHTML(record.Jabatan)}</span>
+
+        <label for="inputFotoPJLP" class="btn-secondary">
+          <i class="fas fa-camera"></i>
+          Pilih Foto
+        </label>
+
+        <input
+          type="file"
+          id="inputFotoPJLP"
+          accept="image/jpeg,image/png,image/webp"
+          hidden
+        >
+
+        <button
+          type="button"
+          class="btn-primary"
+          id="btnUploadFotoPJLP"
+          disabled
+        >
+          Upload Foto
+        </button>
+
+        <small>JPG, PNG, WebP. Maksimal 2 MB.</small>
+      </div>
+    </div>
+
+    <div class="pjlp-detail-grid">
+      <div class="pjlp-detail-item pjlp-detail-full">
+        <span>ID PJLP</span>
+        <strong>${escapeHTML(record.ID_PJLP)}</strong>
+      </div>
+
+      ${FIELD_CONFIG.map(field => `
+        <div class="pjlp-detail-item ${field.type === 'textarea' ? 'pjlp-detail-full' : ''}">
+          <span>${escapeHTML(field.label)}</span>
+          <strong>${escapeHTML(
+            field.key === 'Foto_Profil_ID_Lampiran'
+              ? (record[field.key] ? 'Foto sudah tersimpan' : '-')
+              : (record[field.key] || '-')
+          )}</strong>
         </div>
+      `).join('')}
+    </div>
 
-        <div class="pjlp-modal-footer">
-          <button type="button" class="btn-secondary" id="btnTutupDetail">
-            Tutup
-          </button>
-          <button type="button" class="btn-primary" id="btnEditPJLP">
-            Edit Data
-          </button>
-        </div>
-      `;
+    <div class="pjlp-modal-footer">
+      <button type="button" class="btn-secondary" id="btnTutupDetail">
+        Tutup
+      </button>
 
-      detailContent.querySelector('#btnTutupDetail')
-        .addEventListener('click', closeModal);
+      <button type="button" class="btn-primary" id="btnEditPJLP">
+        Edit Data
+      </button>
+    </div>
+  `;
 
-      detailContent.querySelector('#btnEditPJLP')
-        .addEventListener('click', showEditForm);
+  const inputFoto = detailContent.querySelector('#inputFotoPJLP');
+  const btnUpload = detailContent.querySelector('#btnUploadFotoPJLP');
+
+  let selectedFile = null;
+
+  inputFoto.addEventListener('change', () => {
+    const file = inputFoto.files[0];
+
+    if (!file) return;
+
+    const allowedTypes = [
+      'image/jpeg',
+      'image/png',
+      'image/webp'
+    ];
+
+    if (!allowedTypes.includes(file.type)) {
+      alert('Format foto harus JPG, PNG, atau WebP.');
+      inputFoto.value = '';
+      return;
     }
+
+    if (file.size > 2 * 1024 * 1024) {
+      alert('Ukuran foto maksimal 2 MB.');
+      inputFoto.value = '';
+      return;
+    }
+
+    selectedFile = file;
+
+    if (fotoPreviewUrl) {
+      URL.revokeObjectURL(fotoPreviewUrl);
+    }
+
+    fotoPreviewUrl = URL.createObjectURL(file);
+
+    detailContent.querySelector('.pjlp-profile-section')
+      .querySelector('.pjlp-profile-placeholder, .pjlp-profile-preview')
+      ?.remove();
+
+    const profileInfo = detailContent.querySelector('.pjlp-profile-info');
+
+    profileInfo.insertAdjacentHTML(
+      'beforebegin',
+      `<img src="${fotoPreviewUrl}" class="pjlp-profile-preview" alt="Pratinjau foto">`
+    );
+
+    btnUpload.disabled = false;
+  });
+
+  btnUpload.addEventListener('click', async () => {
+    if (!selectedFile) return;
+
+    btnUpload.disabled = true;
+    btnUpload.textContent = 'Mengunggah...';
+
+    try {
+      const base64 = await fileToBase64(selectedFile);
+
+      const uploadResult = await apiRequest('uploadFotoProfil', {
+        ...credentials,
+        idPJLP,
+        file: {
+          base64,
+          mimeType: selectedFile.type
+        }
+      });
+
+      getResponseData(uploadResult);
+
+      record.Foto_Profil_ID_Lampiran = uploadResult.data.data?.fileId
+        || uploadResult.data.fileId;
+
+      alert('Foto profil berhasil diunggah.');
+
+      if (typeof onUpdated === 'function') {
+        await onUpdated();
+      }
+
+      showDetail();
+
+    } catch (error) {
+      console.error('Upload Foto PJLP:', error);
+      alert(error.message || 'Gagal mengunggah foto.');
+
+      btnUpload.disabled = false;
+      btnUpload.textContent = 'Upload Foto';
+    }
+  });
+
+  detailContent.querySelector('#btnTutupDetail')
+    .addEventListener('click', closeModal);
+
+  detailContent.querySelector('#btnEditPJLP')
+    .addEventListener('click', showEditForm);
+}
+
 
     function showEditForm() {
       detailContent.innerHTML = `
