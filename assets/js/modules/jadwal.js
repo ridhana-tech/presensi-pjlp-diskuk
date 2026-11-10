@@ -74,7 +74,7 @@ function formatLintasHari(value) {
 }
 
 function showAlert(message, type = 'success') {
-  const oldAlert = document.querySelector('.jk-alert');
+  const oldAlert = jadwalRoot.querySelector('.jk-alert');
   if (oldAlert) oldAlert.remove();
 
   const alert = document.createElement('div');
@@ -455,13 +455,29 @@ function injectJadwalStyle() {
    1. TAMPILAN UTAMA
 ===================================================== */
 
+
+/* =====================================================
+   1. TAMPILAN UTAMA
+===================================================== */
+
 export async function showDataJadwal(root) {
-  jadwalRoot = root;
+
+  // Ambil container khusus konten dashboard
+  const content = root.querySelector('#adminContent');
+
+  if (!content) {
+    console.error('Container #adminContent tidak ditemukan.');
+    return;
+  }
+
+  // Simpan referensi container konten
+  jadwalRoot = content;
 
   injectJadwalStyle();
 
-  root.innerHTML = `
+  content.innerHTML = `
     <div class="jk-container">
+
       <div class="jk-toolbar">
         <input
           type="search"
@@ -503,22 +519,24 @@ export async function showDataJadwal(root) {
           </tbody>
         </table>
       </div>
+
     </div>
   `;
 
-  root.querySelector('#jkAddButton')
+  content.querySelector('#jkAddButton')
     .addEventListener('click', () => openJadwalForm());
 
-  root.querySelector('#jkSearch')
+  content.querySelector('#jkSearch')
     .addEventListener('input', event => {
       renderJadwalTable(event.target.value);
     });
 
-  root.querySelector('#jkTableBody')
+  content.querySelector('#jkTableBody')
     .addEventListener('click', handleTableAction);
 
   await loadDataJadwal();
 }
+
 
 
 /* =====================================================
