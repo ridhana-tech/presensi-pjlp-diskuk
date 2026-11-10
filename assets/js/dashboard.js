@@ -1,5 +1,6 @@
 
 import { showDataPJLP } from './modules/pjlp.js';
+import { showDataAtasan } from './modules/atasan.js';
 
 const ADMIN_MENUS = [
   { id: 'dashboard', label: 'Dashboard', icon: 'bi-grid-1x2' },
@@ -350,12 +351,15 @@ export async function initializeDashboard(user, onLogout) {
       if (moduleId === 'dashboard') {
         showDashboardHome(root);
 
-      } else if (moduleId === 'pjlp') {
+        } else if (moduleId === 'pjlp') {
         showDataPJLP(root);
 
-      } else {
+        } else if (moduleId === 'atasan') {
+        showDataAtasan(root);
+
+        } else {
         showModulePlaceholder(root, moduleId);
-      }
+        }
 
       root.querySelectorAll('[data-module]').forEach(item => {
         item.classList.toggle(
