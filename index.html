@@ -1,0 +1,120 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#142b4a">
+
+  <title>Presensi PJLP | DISKUKTRANS ESDM</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+
+<body>
+
+  <main class="login-page">
+
+    <section class="login-container">
+
+      <div class="brand">
+        <div class="brand-icon">
+          <i class="bi bi-calendar2-check"></i>
+        </div>
+
+        <div class="brand-text">
+          <h1>Presensi PJLP</h1>
+          <p>DISKUKTRANS ESDM KARANGANYAR</p>
+        </div>
+      </div>
+
+      <div class="login-card">
+
+        <div class="login-heading">
+          <span class="heading-label">PORTAL KEPEGAWAIAN</span>
+          <h2>Selamat Datang</h2>
+          <p>Silakan masuk menggunakan akun Anda.</p>
+        </div>
+
+        <form id="loginForm">
+
+          <div class="form-group">
+            <label for="username">Username</label>
+
+            <div class="input-group">
+              <i class="bi bi-person"></i>
+
+              <input
+                type="text"
+                id="username"
+                name="username"
+                placeholder="Masukkan username"
+                autocomplete="username"
+                maxlength="100"
+                required
+              >
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="password">Password</label>
+
+            <div class="input-group">
+              <i class="bi bi-lock"></i>
+
+              <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Masukkan password"
+                autocomplete="current-password"
+                maxlength="200"
+                required
+              >
+
+              <button
+                type="button"
+                id="togglePassword"
+                class="toggle-password"
+                aria-label="Tampilkan password"
+              >
+                <i class="bi bi-eye"></i>
+              </button>
+            </div>
+          </div>
+
+          <div id="loginMessage" class="login-message" role="alert"></div>
+
+          <button type="submit" id="loginButton" class="btn-login">
+            <span id="loginButtonText">Masuk ke Aplikasi</span>
+            <i class="bi bi-arrow-right"></i>
+          </button>
+
+        </form>
+
+        <div class="login-security">
+          <i class="bi bi-shield-lock"></i>
+          <span>Akses aplikasi dilindungi autentikasi pengguna.</span>
+        </div>
+
+      </div>
+
+      <footer class="login-footer">
+        <p>Presensi PJLP DISKUKTRANS ESDM</p>
+        <span>Kabupaten Karanganyar</span>
+      </footer>
+
+    </section>
+
+  </main>
+
+  <script type="module" src="assets/js/app.js"></script>
+
+</body>
+</html>
