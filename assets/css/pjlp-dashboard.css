@@ -1,0 +1,123 @@
+/* PJLP MOBILE APP */
+.pjlp-mobile-app {
+  min-height: 100vh;
+  background: #f4f7fb;
+  color: #24364b;
+  padding-bottom: calc(78px + env(safe-area-inset-bottom));
+}
+.pjlp-mobile-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 66px;
+  padding: 10px 18px;
+  background: #142b4a;
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(13,30,53,.12);
+}
+.pjlp-mobile-brand { display:flex; align-items:center; gap:11px; }
+.pjlp-brand-icon {
+  width:39px;height:39px;display:grid;place-items:center;
+  border-radius:11px;background:rgba(255,255,255,.14);font-size:19px;
+}
+.pjlp-mobile-brand strong,.pjlp-mobile-brand small { display:block; }
+.pjlp-mobile-brand strong { font-size:13px; font-weight:700; }
+.pjlp-mobile-brand small { margin-top:2px; font-size:8px; letter-spacing:.8px; opacity:.75; }
+.pjlp-header-avatar {
+  width:36px;height:36px;display:grid;place-items:center;
+  border:1px solid rgba(255,255,255,.25);border-radius:50%;font-size:17px;
+}
+.pjlp-mobile-content { width:min(100%,720px); margin:0 auto; padding:20px 16px 28px; }
+.pjlp-mobile-welcome {
+  display:flex;flex-direction:column;gap:12px;padding:21px;
+  border-radius:17px;background:linear-gradient(135deg,#173b64,#24598c);color:#fff;
+  box-shadow:0 8px 22px rgba(20,43,74,.13);
+}
+.pjlp-eyebrow { display:block;color:#8da9c7;font-size:9px;font-weight:700;letter-spacing:1px; }
+.pjlp-mobile-welcome .pjlp-eyebrow { color:#c1d5ea; }
+.pjlp-mobile-welcome h1 { margin-top:7px;font-size:21px;line-height:1.35;font-weight:700; }
+.pjlp-mobile-welcome p { margin-top:5px;max-width:390px;color:#d8e5f2;font-size:11px;line-height:1.7; }
+.pjlp-mobile-date { display:flex;align-items:center;gap:7px;color:#e3edf7;font-size:10px; }
+.pjlp-attendance-card,.pjlp-quick-section,.pjlp-account-card,.pjlp-mobile-empty {
+  margin-top:17px;padding:19px;border:1px solid #e7edf4;border-radius:16px;background:#fff;
+  box-shadow:0 4px 15px rgba(20,43,74,.035);
+}
+.pjlp-section-heading { display:flex;align-items:center;justify-content:space-between;gap:10px; }
+.pjlp-section-heading h2 { margin-top:4px;color:#142b4a;font-size:15px;font-weight:700; }
+.pjlp-status-pill {
+  display:inline-flex;align-items:center;gap:6px;padding:6px 9px;border-radius:30px;
+  background:#edf7f1;color:#16804b;font-size:9px;font-weight:600;
+}
+.pjlp-status-pill span { width:6px;height:6px;border-radius:50%;background:#1da463; }
+.pjlp-attendance-times { display:grid;grid-template-columns:1fr 1px 1fr;align-items:center;gap:12px;margin:20px 0; }
+.pjlp-time-divider { height:48px;background:#edf0f4; }
+.pjlp-time-item { display:flex;align-items:center;gap:9px;min-width:0; }
+.pjlp-time-icon { width:34px;height:34px;flex-shrink:0;display:grid;place-items:center;border-radius:10px;background:#edf3fa;color:#24598c;font-size:15px; }
+.pjlp-time-item small,.pjlp-time-item strong,.pjlp-time-item em { display:block; }
+.pjlp-time-item small { color:#7b8999;font-size:9px; }
+.pjlp-time-item strong { margin-top:3px;color:#142b4a;font-size:17px; }
+.pjlp-time-item em { margin-top:2px;color:#a0aab6;font-size:8px;font-style:normal; }
+.pjlp-primary-action {
+  width:100%;min-height:44px;display:flex;align-items:center;justify-content:center;gap:9px;
+  border:0;border-radius:10px;background:#142b4a;color:#fff;font-family:inherit;
+  font-size:11px;font-weight:600;cursor:pointer;
+}
+.pjlp-primary-action i:last-child { margin-left:auto;margin-right:12px; }
+.pjlp-primary-action i:first-child { margin-left:auto; }
+.pjlp-card-note { margin-top:9px;color:#8794a4;text-align:center;font-size:9px; }
+.pjlp-quick-section { padding:18px; }
+.pjlp-quick-grid { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:15px; }
+.pjlp-quick-card {
+  min-height:112px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:5px;
+  padding:13px;border:1px solid #edf0f4;border-radius:12px;background:#fff;text-align:left;
+  font-family:inherit;cursor:pointer;transition:transform .15s,border-color .15s;
+}
+.pjlp-quick-card:active { transform:scale(.98); }
+.pjlp-quick-icon { width:33px;height:33px;display:grid;place-items:center;margin-bottom:3px;border-radius:10px;font-size:15px; }
+.pjlp-quick-icon.blue { background:#edf3ff;color:#3269c8; }
+.pjlp-quick-icon.green { background:#eaf7f0;color:#16804b; }
+.pjlp-quick-icon.purple { background:#f2efff;color:#7357bd; }
+.pjlp-quick-icon.orange { background:#fff4e8;color:#c47a23; }
+.pjlp-quick-card strong { color:#24364b;font-size:11px; }
+.pjlp-quick-card small { color:#8995a4;font-size:9px; }
+.pjlp-bottom-nav {
+  position:fixed;right:0;bottom:0;left:0;z-index:30;display:grid;grid-template-columns:repeat(3,1fr);
+  padding:8px 12px calc(8px + env(safe-area-inset-bottom));border-top:1px solid #e8edf3;
+  background:rgba(255,255,255,.97);backdrop-filter:blur(12px);
+}
+.pjlp-bottom-nav button {
+  min-height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  border:0;background:transparent;color:#8995a4;font-family:inherit;cursor:pointer;
+}
+.pjlp-bottom-nav button i { font-size:18px; }
+.pjlp-bottom-nav button span { font-size:9px;font-weight:600; }
+.pjlp-bottom-nav button.active { color:#174477; }
+.pjlp-bottom-nav button.active i { transform:translateY(-1px); }
+.pjlp-mobile-page-heading { padding:8px 2px 5px; }
+.pjlp-mobile-page-heading h1 { margin-top:7px;color:#142b4a;font-size:22px; }
+.pjlp-mobile-page-heading p { margin-top:6px;color:#788697;font-size:11px;line-height:1.7; }
+.pjlp-mobile-empty { min-height:250px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center; }
+.pjlp-mobile-empty>span { width:58px;height:58px;display:grid;place-items:center;border-radius:18px;background:#edf3fa;color:#24598c;font-size:25px; }
+.pjlp-mobile-empty h2 { margin-top:15px;color:#142b4a;font-size:14px; }
+.pjlp-mobile-empty p { max-width:300px;margin-top:7px;color:#8794a4;font-size:10px;line-height:1.8; }
+.pjlp-account-card { display:flex;flex-direction:column;align-items:center;padding:25px 19px; }
+.pjlp-account-avatar { width:66px;height:66px;display:grid;place-items:center;border-radius:50%;background:#eaf1fa;color:#24598c;font-size:28px; }
+.pjlp-account-card h2 { margin-top:12px;color:#142b4a;font-size:16px; }
+.pjlp-account-role { margin-top:5px;padding:5px 10px;border-radius:20px;background:#edf3fa;color:#24598c;font-size:9px;font-weight:700; }
+.pjlp-account-details { width:100%;margin-top:20px; }
+.pjlp-account-details div { display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid #edf0f4; }
+.pjlp-account-details small { color:#8491a1;font-size:10px; }
+.pjlp-account-details strong { max-width:60%;color:#26384d;font-size:10px;text-align:right;overflow-wrap:anywhere; }
+.pjlp-logout-button { width:100%;min-height:43px;margin-top:20px;border:1px solid #f0d6d4;border-radius:10px;background:#fff7f6;color:#b42318;font-family:inherit;font-size:11px;font-weight:600;cursor:pointer; }
+.pjlp-logout-button i { margin-right:7px; }
+@media (min-width:700px) {
+  .pjlp-mobile-app { max-width:520px;min-height:100vh;margin:0 auto;background:#f4f7fb;box-shadow:0 0 35px rgba(20,43,74,.07); }
+  .pjlp-mobile-header { position:sticky; }
+  .pjlp-mobile-content { padding:24px 20px 30px; }
+  .pjlp-mobile-welcome { padding:25px; }
+  .pjlp-quick-grid { grid-template-columns:repeat(4,minmax(0,1fr)); }
+  .pjlp-quick-card { min-height:125px; }
+}

@@ -46,7 +46,8 @@ module.exports = async (req, res) => {
       'getDetailJadwal',
       'tambahJadwal',
       'ubahJadwal',
-      'nonaktifkanJadwal'
+      'nonaktifkanJadwal',
+      'buatAkunPJLP'
     ];
 
     if (!allowedActions.includes(payload.action)) {
