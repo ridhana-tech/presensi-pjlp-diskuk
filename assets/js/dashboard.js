@@ -348,27 +348,25 @@ export async function initializeDashboard(user, onLogout) {
   // Navigasi menu
   
 // Navigasi menu
+
 root.querySelectorAll('[data-module]').forEach(button => {
   button.addEventListener('click', () => {
     const moduleId = button.dataset.module;
-
-    // Container khusus isi halaman
-    const content = root.querySelector('#adminContent');
 
     if (moduleId === 'dashboard') {
       showDashboardHome(root);
 
     } else if (moduleId === 'pjlp') {
-      showDataPJLP(content);
+      showDataPJLP(root);
 
     } else if (moduleId === 'atasan') {
-      showDataAtasan(content);
+      showDataAtasan(root);
 
     } else if (moduleId === 'lokasi') {
-      showDataLokasi(content);
+      showDataLokasi(root);
 
     } else if (moduleId === 'jadwal') {
-      showDataJadwal(content);
+      showDataJadwal(root);
 
     } else {
       showModulePlaceholder(root, moduleId);
@@ -394,6 +392,7 @@ root.querySelectorAll('[data-module]').forEach(button => {
       .classList.remove('sidebar-open');
   });
 });
+
 
 
 
