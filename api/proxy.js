@@ -41,7 +41,12 @@ module.exports = async (req, res) => {
       'getDetailLokasiKantor',
       'tambahLokasiKantor',
       'ubahLokasiKantor',
-      'nonaktifkanLokasiKantor'
+      'nonaktifkanLokasiKantor',
+      'getDataJadwal',
+      'getDetailJadwal',
+      'tambahJadwal',
+      'ubahJadwal',
+      'nonaktifkanJadwal'
     ];
 
     if (!allowedActions.includes(payload.action)) {
