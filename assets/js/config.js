@@ -4,8 +4,7 @@ export const APP_CONFIG = {
   VERSION: '1.0.0',
   TIMEZONE: 'Asia/Jakarta',
 
-  // Diisi setelah deployment Google Apps Script.
-  API_URL: '',
+  API_URL: '/api/proxy',
 
   SESSION: {
     TOKEN_KEY: 'pjlp_session_token',
