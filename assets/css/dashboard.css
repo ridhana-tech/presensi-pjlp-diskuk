@@ -1128,3 +1128,67 @@
     padding: 18px;
   }
 }
+
+/* =====================================================
+   PERBAIKAN TAMPILAN TOMBOL PJLP
+===================================================== */
+
+.pjlp-page .btn-primary,
+.pjlp-modal .btn-primary,
+.pjlp-detail-content .btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 10px 18px;
+  border: 1px solid #142b4a;
+  border-radius: 8px;
+  background: #142b4a;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pjlp-page .btn-primary:hover,
+.pjlp-modal .btn-primary:hover,
+.pjlp-detail-content .btn-primary:hover {
+  background: #203f66;
+  border-color: #203f66;
+}
+
+.pjlp-page .btn-primary:disabled,
+.pjlp-modal .btn-primary:disabled,
+.pjlp-detail-content .btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.pjlp-modal .btn-secondary,
+.pjlp-detail-content .btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 10px 18px;
+  border: 1px solid #d5dce5;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #53647a;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pjlp-modal .btn-secondary:hover,
+.pjlp-detail-content .btn-secondary:hover {
+  background: #f1f4f8;
+  border-color: #b8c4d3;
+}
