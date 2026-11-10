@@ -43,6 +43,7 @@ async function testEndpoint(action, extraData = {}) {
 }
 
 
+
 window.testDataPJLP = {
   tampil: () => testEndpoint('getDataPJLP'),
 
@@ -61,7 +62,19 @@ window.testDataPJLP = {
       Foto_Profil_ID_Lampiran: '',
       Catatan: 'DATA UJI - HAPUS SETELAH PENGUJIAN'
     }
+  }),
+
+  detail: (idPJLP) => testEndpoint('getDetailPJLP', {
+    idPJLP
+  }),
+
+  edit: (idPJLP) => testEndpoint('ubahDataPJLP', {
+    idPJLP,
+    data: {
+      Catatan: 'DATA UJI - BERHASIL DIEDIT'
+    }
   })
 };
+
 
 
