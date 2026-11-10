@@ -14,7 +14,7 @@ let jadwalRoot = null;
 
 
 /* =====================================================
-   HELPER
+   1. HELPER
 ===================================================== */
 
 function getCredentials() {
@@ -74,27 +74,34 @@ function formatLintasHari(value) {
 }
 
 function showAlert(message, type = 'success') {
+  if (!jadwalRoot) return;
+
   const oldAlert = jadwalRoot.querySelector('.jk-alert');
+
   if (oldAlert) oldAlert.remove();
 
   const alert = document.createElement('div');
+
   alert.className = `jk-alert jk-alert-${type}`;
   alert.textContent = message;
 
   jadwalRoot.prepend(alert);
 
-  setTimeout(() => alert.remove(), 4000);
+  setTimeout(() => {
+    alert.remove();
+  }, 4000);
 }
 
 
 /* =====================================================
-   CSS MODULE
+   2. CSS MODULE
 ===================================================== */
 
 function injectJadwalStyle() {
   if (document.getElementById('jadwal-module-style')) return;
 
   const style = document.createElement('style');
+
   style.id = 'jadwal-module-style';
 
   style.textContent = `
@@ -111,6 +118,19 @@ function injectJadwalStyle() {
       gap: 12px;
       flex-wrap: wrap;
       margin-bottom: 20px;
+    }
+
+    .jk-toolbar h2 {
+      margin: 0 0 6px;
+      color: #233d70;
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .jk-toolbar p {
+      margin: 0;
+      color: #8490a2;
+      font-size: 13px;
     }
 
     .jk-search {
@@ -164,9 +184,17 @@ function injectJadwalStyle() {
       color: #263449;
     }
 
+    .jk-btn-light:hover {
+      background: #dfe6f0;
+    }
+
     .jk-btn-danger {
       background: #fff0f0;
       color: #c0392b;
+    }
+
+    .jk-btn-danger:hover {
+      background: #ffe0e0;
     }
 
     .jk-btn-small {
@@ -269,6 +297,7 @@ function injectJadwalStyle() {
       justify-content: center;
       align-items: center;
       padding: 18px;
+      box-sizing: border-box;
     }
 
     .jk-modal {
@@ -417,6 +446,10 @@ function injectJadwalStyle() {
       color: #7b8798;
     }
 
+    .jk-form-error {
+      margin-bottom: 16px;
+    }
+
     @media(max-width: 600px) {
       .jk-form-grid,
       .jk-detail-grid {
@@ -452,39 +485,35 @@ function injectJadwalStyle() {
 
 
 /* =====================================================
-   1. TAMPILAN UTAMA
-===================================================== */
-
-
-/* =====================================================
-   1. TAMPILAN UTAMA
+   3. TAMPILAN UTAMA
 ===================================================== */
 
 export async function showDataJadwal(root) {
-
-  // Ambil container khusus konten dashboard
+  // Mengambil container isi dashboard.
+  // Sidebar dan header tidak akan dihapus.
   const content = root.querySelector('#adminContent');
 
   if (!content) {
-    console.error('Container #adminContent tidak ditemukan.');
+    console.error('Container #adminContent tidak ditemukan.', root);
     return;
   }
 
-  // Simpan referensi container konten
   jadwalRoot = content;
 
   injectJadwalStyle();
 
+  // Tutup modal jadwal yang mungkin masih terbuka.
+  closeJadwalModal();
+
   content.innerHTML = `
     <div class="jk-container">
 
+      <!-- TOOLBAR -->
       <div class="jk-toolbar">
-        <input
-          type="search"
-          id="jkSearch"
-          class="jk-search"
-          placeholder="Cari nama atau ID jadwal..."
-        >
+        <div>
+          <h2>Jadwal Kerja</h2>
+          <p>Pengelolaan jadwal kerja dan waktu presensi PJLP.</p>
+        </div>
 
         <button
           type="button"
@@ -495,7 +524,43 @@ export async function showDataJadwal(root) {
         </button>
       </div>
 
+      <!-- DAFTAR JADWAL -->
       <div class="jk-table-wrap">
+
+        <div style="
+          padding: 16px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 12px;
+          flex-wrap: wrap;
+          border-bottom: 1px solid #e6eaf0;
+        ">
+          <div>
+            <h3 style="
+              margin: 0 0 5px;
+              font-size: 16px;
+              color: #263449;
+            ">
+              Daftar Jadwal Kerja
+            </h3>
+
+            <span
+              id="jkTotal"
+              style="font-size: 12px; color: #8490a2;"
+            >
+              Memuat data...
+            </span>
+          </div>
+
+          <input
+            type="search"
+            id="jkSearch"
+            class="jk-search"
+            placeholder="Cari ID atau nama jadwal..."
+          >
+        </div>
+
         <table class="jk-table">
           <thead>
             <tr>
@@ -518,37 +583,50 @@ export async function showDataJadwal(root) {
             </tr>
           </tbody>
         </table>
+
       </div>
 
     </div>
   `;
 
+  // Tombol tambah jadwal
   content.querySelector('#jkAddButton')
-    .addEventListener('click', () => openJadwalForm());
+    .addEventListener('click', () => {
+      openJadwalForm();
+    });
 
+  // Pencarian jadwal
   content.querySelector('#jkSearch')
     .addEventListener('input', event => {
       renderJadwalTable(event.target.value);
     });
 
+  // Event detail tabel
   content.querySelector('#jkTableBody')
     .addEventListener('click', handleTableAction);
 
+  // Muat data awal
   await loadDataJadwal();
 }
 
 
-
 /* =====================================================
-   2. AMBIL DATA JADWAL
+   4. AMBIL DATA JADWAL
 ===================================================== */
 
 async function loadDataJadwal() {
+  if (!jadwalRoot) return;
+
   const tbody = jadwalRoot.querySelector('#jkTableBody');
+  const total = jadwalRoot.querySelector('#jkTotal');
+
+  if (!tbody) return;
 
   tbody.innerHTML = `
     <tr>
-      <td colspan="8" class="jk-empty">Memuat data...</td>
+      <td colspan="8" class="jk-empty">
+        Memuat data...
+      </td>
     </tr>
   `;
 
@@ -560,6 +638,12 @@ async function loadDataJadwal() {
     renderJadwalTable();
 
   } catch (error) {
+    console.error('Gagal memuat jadwal:', error);
+
+    if (total) {
+      total.textContent = 'Gagal memuat data';
+    }
+
     tbody.innerHTML = `
       <tr>
         <td colspan="8" class="jk-empty">
@@ -572,11 +656,16 @@ async function loadDataJadwal() {
 
 
 /* =====================================================
-   3. RENDER TABEL
+   5. RENDER TABEL
 ===================================================== */
 
 function renderJadwalTable(keyword = '') {
+  if (!jadwalRoot) return;
+
   const tbody = jadwalRoot.querySelector('#jkTableBody');
+  const total = jadwalRoot.querySelector('#jkTotal');
+
+  if (!tbody) return;
 
   const search = String(keyword).toLowerCase().trim();
 
@@ -584,6 +673,10 @@ function renderJadwalTable(keyword = '') {
     String(item.ID_Jadwal || '').toLowerCase().includes(search) ||
     String(item.Nama_Jadwal || '').toLowerCase().includes(search)
   );
+
+  if (total) {
+    total.textContent = `${filtered.length} jadwal kerja`;
+  }
 
   if (!filtered.length) {
     tbody.innerHTML = `
@@ -620,10 +713,13 @@ function renderJadwalTable(keyword = '') {
       <td>
         <div class="jk-actions">
           <button
+            type="button"
             class="jk-btn jk-btn-light jk-btn-small"
             data-action="detail"
             data-id="${escapeHTML(item.ID_Jadwal)}"
-          >Detail</button>
+          >
+            Detail
+          </button>
         </div>
       </td>
     </tr>
@@ -632,7 +728,7 @@ function renderJadwalTable(keyword = '') {
 
 
 /* =====================================================
-   4. AKSI TABEL
+   6. AKSI TABEL
 ===================================================== */
 
 async function handleTableAction(event) {
@@ -650,13 +746,15 @@ async function handleTableAction(event) {
 
 
 /* =====================================================
-   5. MODAL
+   7. MODAL
 ===================================================== */
 
 function closeJadwalModal() {
   const modal = document.querySelector('.jk-modal-overlay');
 
-  if (modal) modal.remove();
+  if (modal) {
+    modal.remove();
+  }
 
   document.removeEventListener(
     'keydown',
@@ -670,26 +768,32 @@ function handleModalEscape(event) {
   }
 }
 
-function createJadwalModal(title, content, footer = '') {
+function createJadwalModal(title, modalContent, footer = '') {
   closeJadwalModal();
 
   const overlay = document.createElement('div');
+
   overlay.className = 'jk-modal-overlay';
 
   overlay.innerHTML = `
     <div class="jk-modal">
+
       <div class="jk-modal-header">
-        <h3 class="jk-modal-title">${escapeHTML(title)}</h3>
+        <h3 class="jk-modal-title">
+          ${escapeHTML(title)}
+        </h3>
 
         <button
           type="button"
           class="jk-modal-close"
           data-close-modal
-        >&times;</button>
+        >
+          &times;
+        </button>
       </div>
 
       <div class="jk-modal-body">
-        ${content}
+        ${modalContent}
       </div>
 
       ${footer ? `
@@ -697,6 +801,7 @@ function createJadwalModal(title, content, footer = '') {
           ${footer}
         </div>
       ` : ''}
+
     </div>
   `;
 
@@ -721,7 +826,7 @@ function createJadwalModal(title, content, footer = '') {
 
 
 /* =====================================================
-   6. FORM TAMBAH / EDIT
+   8. FORM TAMBAH / EDIT
 ===================================================== */
 
 function openJadwalForm(item = null) {
@@ -729,7 +834,7 @@ function openJadwalForm(item = null) {
 
   const value = key => escapeHTML(item?.[key] ?? '');
 
-  const content = `
+  const modalContent = `
     <div class="jk-info">
       Toleransi keterlambatan ditetapkan 0 menit.
       Keterlambatan berapa pun akan dihitung berdasarkan
@@ -737,6 +842,7 @@ function openJadwalForm(item = null) {
     </div>
 
     <form id="jkForm">
+
       <div class="jk-form-grid">
 
         <div class="jk-form-group full">
@@ -841,13 +947,17 @@ function openJadwalForm(item = null) {
             class="jk-form-control"
             required
           >
-            <option value="Tidak"
-              ${item?.Lintas_Hari !== 'Ya' ? 'selected' : ''}>
+            <option
+              value="Tidak"
+              ${item?.Lintas_Hari !== 'Ya' ? 'selected' : ''}
+            >
               Tidak
             </option>
 
-            <option value="Ya"
-              ${item?.Lintas_Hari === 'Ya' ? 'selected' : ''}>
+            <option
+              value="Ya"
+              ${item?.Lintas_Hari === 'Ya' ? 'selected' : ''}
+            >
               Ya
             </option>
           </select>
@@ -864,13 +974,17 @@ function openJadwalForm(item = null) {
               class="jk-form-control"
               required
             >
-              <option value="Aktif"
-                ${item.Status === 'Aktif' ? 'selected' : ''}>
+              <option
+                value="Aktif"
+                ${item.Status === 'Aktif' ? 'selected' : ''}
+              >
                 Aktif
               </option>
 
-              <option value="Nonaktif"
-                ${item.Status === 'Nonaktif' ? 'selected' : ''}>
+              <option
+                value="Nonaktif"
+                ${item.Status === 'Nonaktif' ? 'selected' : ''}
+              >
                 Nonaktif
               </option>
             </select>
@@ -878,7 +992,9 @@ function openJadwalForm(item = null) {
         ` : ''}
 
         <div class="jk-form-group full">
-          <label class="jk-form-label">Keterangan</label>
+          <label class="jk-form-label">
+            Keterangan
+          </label>
 
           <textarea
             name="Keterangan"
@@ -890,6 +1006,7 @@ function openJadwalForm(item = null) {
         </div>
 
       </div>
+
     </form>
   `;
 
@@ -898,19 +1015,23 @@ function openJadwalForm(item = null) {
       type="button"
       class="jk-btn jk-btn-light"
       data-close-modal
-    >Batal</button>
+    >
+      Batal
+    </button>
 
     <button
       type="submit"
       form="jkForm"
       class="jk-btn jk-btn-primary"
       id="jkSaveButton"
-    >${isEdit ? 'Simpan Perubahan' : 'Simpan Jadwal'}</button>
+    >
+      ${isEdit ? 'Simpan Perubahan' : 'Simpan Jadwal'}
+    </button>
   `;
 
   const modal = createJadwalModal(
     isEdit ? 'Ubah Jadwal Kerja' : 'Tambah Jadwal Kerja',
-    content,
+    modalContent,
     footer
   );
 
@@ -927,14 +1048,13 @@ function openJadwalForm(item = null) {
 
 
 /* =====================================================
-   7. SIMPAN FORM
+   9. SIMPAN FORM
 ===================================================== */
 
 async function submitJadwalForm(form, idJadwal = null) {
   const button = document.getElementById('jkSaveButton');
 
   const formData = new FormData(form);
-
   const data = Object.fromEntries(formData.entries());
 
   data.Toleransi_Terlambat_Menit = 0;
@@ -942,6 +1062,7 @@ async function submitJadwalForm(form, idJadwal = null) {
   const jamMasuk = data.Jam_Masuk;
   const jamPulang = data.Jam_Pulang;
 
+  // Validasi lintas hari
   if (
     jamPulang < jamMasuk &&
     data.Lintas_Hari !== 'Ya'
@@ -962,6 +1083,7 @@ async function submitJadwalForm(form, idJadwal = null) {
     return;
   }
 
+  // Validasi batas akhir presensi
   if (
     data.Batas_Akhir_Presensi_Masuk &&
     data.Batas_Akhir_Presensi_Masuk <
@@ -984,6 +1106,7 @@ async function submitJadwalForm(form, idJadwal = null) {
       });
 
       closeJadwalModal();
+
       showAlert('Jadwal kerja berhasil diperbarui.');
 
     } else {
@@ -992,13 +1115,17 @@ async function submitJadwalForm(form, idJadwal = null) {
       });
 
       closeJadwalModal();
+
       showAlert('Jadwal kerja berhasil ditambahkan.');
     }
 
     await loadDataJadwal();
 
   } catch (error) {
+    console.error('Simpan Jadwal:', error);
+
     button.disabled = false;
+
     button.textContent = idJadwal
       ? 'Simpan Perubahan'
       : 'Simpan Jadwal';
@@ -1016,11 +1143,15 @@ function showModalError(message) {
 
   if (!errorBox) {
     errorBox = document.createElement('div');
-    errorBox.className = 'jk-alert jk-alert-error jk-form-error';
+
+    errorBox.className =
+      'jk-alert jk-alert-error jk-form-error';
+
     body.prepend(errorBox);
   }
 
   errorBox.textContent = message;
+
   errorBox.scrollIntoView({
     behavior: 'smooth',
     block: 'nearest'
@@ -1029,7 +1160,7 @@ function showModalError(message) {
 
 
 /* =====================================================
-   8. DETAIL JADWAL
+   10. DETAIL JADWAL
 ===================================================== */
 
 async function openJadwalDetail(idJadwal) {
@@ -1038,23 +1169,32 @@ async function openJadwalDetail(idJadwal) {
       idJadwal
     });
 
+    if (!item) {
+      throw new Error('Data jadwal tidak ditemukan.');
+    }
+
     const fields = [
       ['ID Jadwal', item.ID_Jadwal],
       ['Nama Jadwal', item.Nama_Jadwal],
       ['Jam Masuk', item.Jam_Masuk],
       ['Jam Pulang', item.Jam_Pulang],
       ['Mulai Presensi Masuk', item.Mulai_Presensi_Masuk],
-      ['Batas Akhir Presensi Masuk', item.Batas_Akhir_Presensi_Masuk || '-'],
+      [
+        'Batas Akhir Presensi Masuk',
+        item.Batas_Akhir_Presensi_Masuk || '-'
+      ],
       ['Toleransi Terlambat', '0 menit'],
       ['Lintas Hari', item.Lintas_Hari],
       ['Status', item.Status],
       ['Keterangan', item.Keterangan || '-']
     ];
 
-    const content = `
+    const modalContent = `
       <div class="jk-detail-grid">
+
         ${fields.map(([label, value]) => `
           <div class="jk-detail-item">
+
             <span class="jk-detail-label">
               ${escapeHTML(label)}
             </span>
@@ -1062,8 +1202,10 @@ async function openJadwalDetail(idJadwal) {
             <span class="jk-detail-value">
               ${escapeHTML(value)}
             </span>
+
           </div>
         `).join('')}
+
       </div>
     `;
 
@@ -1073,33 +1215,41 @@ async function openJadwalDetail(idJadwal) {
           type="button"
           class="jk-btn jk-btn-danger"
           id="jkDeactivateButton"
-        >Nonaktifkan</button>
+        >
+          Nonaktifkan
+        </button>
       ` : ''}
 
       <button
         type="button"
         class="jk-btn jk-btn-primary"
         id="jkEditButton"
-      >Ubah Jadwal</button>
+      >
+        Ubah Jadwal
+      </button>
 
       <button
         type="button"
         class="jk-btn jk-btn-light"
         data-close-modal
-      >Tutup</button>
+      >
+        Tutup
+      </button>
     `;
 
     const modal = createJadwalModal(
       'Detail Jadwal Kerja',
-      content,
+      modalContent,
       footer
     );
 
+    // Tombol edit
     modal.querySelector('#jkEditButton')
       .addEventListener('click', () => {
         openJadwalForm(item);
       });
 
+    // Tombol nonaktifkan
     const deactivateButton =
       modal.querySelector('#jkDeactivateButton');
 
@@ -1110,21 +1260,26 @@ async function openJadwalDetail(idJadwal) {
     }
 
   } catch (error) {
+    console.error('Detail Jadwal:', error);
+
     showAlert(error.message, 'error');
   }
 }
 
 
 /* =====================================================
-   9. NONAKTIFKAN JADWAL
+   11. NONAKTIFKAN JADWAL
 ===================================================== */
 
 async function deactivateJadwal(idJadwal) {
   const item = jadwalData.find(
-    row => row.ID_Jadwal === idJadwal
+    row => String(row.ID_Jadwal) === String(idJadwal)
   );
 
-  if (!item) return;
+  if (!item) {
+    showModalError('Data jadwal tidak ditemukan.');
+    return;
+  }
 
   const confirmed = window.confirm(
     `Apakah Anda yakin ingin menonaktifkan jadwal "${item.Nama_Jadwal}"?`
@@ -1144,6 +1299,8 @@ async function deactivateJadwal(idJadwal) {
     await loadDataJadwal();
 
   } catch (error) {
+    console.error('Nonaktifkan Jadwal:', error);
+
     showModalError(error.message);
   }
 }
