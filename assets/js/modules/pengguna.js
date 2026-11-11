@@ -307,7 +307,7 @@ function bukaModalBuatAkun(content) {
   `).join('');
 
   container.innerHTML = `
-    <div class="pjlp-modal-overlay" id="akunModalOverlay">
+    <div class="pjlp-modal-overlay active" id="akunModalOverlay">
       <div class="pjlp-modal">
         <div class="pjlp-modal-header">
           <div>
