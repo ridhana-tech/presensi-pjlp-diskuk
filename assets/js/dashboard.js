@@ -3,6 +3,7 @@ import { showDataPJLP } from './modules/pjlp.js';
 import { showDataAtasan } from './modules/atasan.js';
 import { showDataLokasi } from './modules/lokasi.js';
 import { showDataJadwal } from './modules/jadwal.js';
+import { showKelolaAkun } from './modules/pengguna.js';
 
 const ADMIN_MENUS = [
   { id: 'dashboard', label: 'Dashboard', icon: 'bi-grid-1x2' },
@@ -367,6 +368,9 @@ root.querySelectorAll('[data-module]').forEach(button => {
 
     } else if (moduleId === 'jadwal') {
       showDataJadwal(root);
+
+    } else if (moduleId === 'pengguna') {
+      showKelolaAkun(root, currentDashboardUser);
 
     } else {
       showModulePlaceholder(root, moduleId);
