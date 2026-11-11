@@ -1191,48 +1191,48 @@ async function submitBuatAkun(form) {
 }
 
 
-async function resetAkunSession(userId, button) {
-  if (!userId) return;
+// async function resetAkunSession(userId, button) {
+//   if (!userId) return;
 
-  const konfirmasi = confirm(
-    'Apakah Anda yakin ingin mereset sesi pengguna ini?\n\n' +
-    'Pengguna akan diminta login kembali pada perangkatnya.'
-  );
+//   const konfirmasi = confirm(
+//     'Apakah Anda yakin ingin mereset sesi pengguna ini?\n\n' +
+//     'Pengguna akan diminta login kembali pada perangkatnya.'
+//   );
 
-  if (!konfirmasi) return;
+//   if (!konfirmasi) return;
 
-  const tombolAwal = button.innerHTML;
+//   const tombolAwal = button.innerHTML;
 
-  button.disabled = true;
-  button.textContent = 'Mereset...';
+//   button.disabled = true;
+//   button.textContent = 'Mereset...';
 
-  try {
-    const result = await penggunaRequest(
-      'resetSessionPengguna',
-      {
-        targetUserId: userId
-      }
-    );
+//   try {
+//     const result = await penggunaRequest(
+//       'resetSessionPengguna',
+//       {
+//         targetUserId: userId
+//       }
+//     );
 
-    showAlert(
-      result.message || 'Sesi pengguna berhasil direset.',
-      'success'
-    );
+//     showAlert(
+//       result.message || 'Sesi pengguna berhasil direset.',
+//       'success'
+//     );
 
-    await loadDataAkun();
+//     await loadDataAkun();
 
-  } catch (error) {
-    console.error('Gagal mereset sesi pengguna:', error);
+//   } catch (error) {
+//     console.error('Gagal mereset sesi pengguna:', error);
 
-    showAlert(
-      error.message || 'Gagal mereset sesi pengguna.',
-      'error'
-    );
+//     showAlert(
+//       error.message || 'Gagal mereset sesi pengguna.',
+//       'error'
+//     );
 
-    button.disabled = false;
-    button.innerHTML = tombolAwal;
-  }
-}
+//     button.disabled = false;
+//     button.innerHTML = tombolAwal;
+//   }
+// }
 
 
 
