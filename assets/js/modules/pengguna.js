@@ -13,6 +13,7 @@ let daftarAkun = [];
 let belumMemilikiAkun = [];
 let ringkasan = {};
 let penggunaRoot = null;
+let penggunaEventController = null;
 
 
 /* =====================================================
@@ -533,6 +534,7 @@ function injectPenggunaStyle() {
    3. TAMPILAN UTAMA
 ===================================================== */
 
+
 export async function showKelolaAkun(root) {
   const content = root.querySelector('#adminContent');
 
@@ -543,13 +545,18 @@ export async function showKelolaAkun(root) {
 
   penggunaRoot = content;
 
+  // Hentikan listener halaman sebelumnya.
+  penggunaEventController?.abort();
+  penggunaEventController = new AbortController();
+
+  const { signal } = penggunaEventController;
+
   closePenggunaModal();
   injectPenggunaStyle();
 
   content.innerHTML = `
     <div class="pa-container">
 
-      <!-- TOOLBAR -->
       <div class="pa-toolbar">
         <div>
           <h2>Pengguna & Akun</h2>
@@ -566,7 +573,6 @@ export async function showKelolaAkun(root) {
         </button>
       </div>
 
-      <!-- RINGKASAN -->
       <div class="pa-summary">
 
         <div class="pa-summary-card">
@@ -591,7 +597,6 @@ export async function showKelolaAkun(root) {
 
       </div>
 
-      <!-- TABEL AKUN -->
       <div class="pa-table-card">
 
         <div class="pa-table-heading">
@@ -621,12 +626,13 @@ export async function showKelolaAkun(root) {
                 <th>Role</th>
                 <th>Status</th>
                 <th>Terakhir Login</th>
+                <th>Aksi</th>
               </tr>
             </thead>
 
             <tbody id="paTableBody">
               <tr>
-                <td colspan="7" class="pa-empty">
+                <td colspan="8" class="pa-empty">
                   Memuat data akun...
                 </td>
               </tr>
@@ -640,19 +646,33 @@ export async function showKelolaAkun(root) {
     </div>
   `;
 
-  // Tombol buat akun
+  // Tombol buat akun.
   content.querySelector('#paAddButton')
-    .addEventListener('click', openBuatAkunForm);
+    .addEventListener('click', openBuatAkunForm, { signal });
 
-  // Pencarian akun
+  // Pencarian akun.
   content.querySelector('#paSearch')
     .addEventListener('input', event => {
       renderAkunTable(event.target.value);
-    });
+    }, { signal });
 
-  // Muat data awal
+  // Event delegasi untuk aksi akun.
+  content.addEventListener('click', event => {
+    const button = event.target.closest('[data-reset-session]');
+
+    if (!button || !content.contains(button)) return;
+
+    const userId = button.dataset.resetSession;
+
+    if (!userId) return;
+
+    resetAkunSession(userId, button);
+  }, { signal });
+
+  // Muat data awal.
   await loadDataAkun();
 }
+
 
 
 /* =====================================================
@@ -668,9 +688,18 @@ async function loadDataAkun() {
 
   tbody.innerHTML = `
     <tr>
-      <td colspan="7" class="pa-empty">
-        Memuat data akun...
-      </td>
+      <td>
+        <button
+            type="button"
+            class="pa-btn pa-btn-light"
+            data-reset-session="${escapeHTML(akun.idPengguna)}"
+            title="Reset sesi login pengguna"
+            ${!akun.idPengguna ? 'disabled' : ''}
+        >
+            <i class="bi bi-arrow-counterclockwise"></i>
+            Reset Sesi
+        </button>
+       </td>
     </tr>
   `;
 
@@ -696,7 +725,7 @@ async function loadDataAkun() {
 
     tbody.innerHTML = `
       <tr>
-        <td colspan="7" class="pa-empty">
+        <td colspan="8" class="pa-empty">
           ${escapeHTML(error.message)}
           <br><br>
 
@@ -781,7 +810,7 @@ function renderAkunTable(keyword = '') {
   if (!filtered.length) {
     tbody.innerHTML = `
       <tr>
-        <td colspan="7" class="pa-empty">
+        <td colspan="8" class="pa-empty">
           ${search
             ? 'Data akun tidak ditemukan.'
             : 'Belum ada akun PJLP.'}
@@ -825,6 +854,17 @@ function renderAkunTable(keyword = '') {
           ${escapeHTML(
             akun.terakhirLogin || 'Belum pernah login'
           )}
+        </td>
+        <td>
+        <button
+            type="button"
+            class="pa-btn pa-btn-light"
+            data-reset-session="${escapeHTML(akun.idPengguna)}"
+            title="Reset sesi pengguna"
+        >
+            <i class="bi bi-arrow-counterclockwise"></i>
+            Reset Sesi
+        </button>
         </td>
       </tr>
     `;
@@ -1151,6 +1191,51 @@ async function submitBuatAkun(form) {
 }
 
 
+async function resetAkunSession(userId, button) {
+  if (!userId) return;
+
+  const konfirmasi = confirm(
+    'Apakah Anda yakin ingin mereset sesi pengguna ini?\n\n' +
+    'Pengguna akan diminta login kembali pada perangkatnya.'
+  );
+
+  if (!konfirmasi) return;
+
+  const tombolAwal = button.innerHTML;
+
+  button.disabled = true;
+  button.textContent = 'Mereset...';
+
+  try {
+    const result = await penggunaRequest(
+      'resetSessionPengguna',
+      {
+        targetUserId: userId
+      }
+    );
+
+    showAlert(
+      result.message || 'Sesi pengguna berhasil direset.',
+      'success'
+    );
+
+    await loadDataAkun();
+
+  } catch (error) {
+    console.error('Gagal mereset sesi pengguna:', error);
+
+    showAlert(
+      error.message || 'Gagal mereset sesi pengguna.',
+      'error'
+    );
+
+    button.disabled = false;
+    button.innerHTML = tombolAwal;
+  }
+}
+
+
+
 /* =====================================================
    10. NOTIFIKASI ERROR MODAL
 ===================================================== */
@@ -1177,4 +1262,53 @@ function showPenggunaModalError(message) {
     behavior: 'smooth',
     block: 'nearest'
   });
+}
+
+/* =====================================================
+   11. RESET SESI PENGGUNA
+===================================================== */
+
+async function resetAkunSession(userId, button) {
+  if (!userId) {
+    showAlert('ID pengguna tidak ditemukan.', 'error');
+    return;
+  }
+
+  const konfirmasi = confirm(
+    'Apakah Anda yakin ingin mereset sesi login pengguna ini?\n\n' +
+    'Pengguna harus login kembali setelah sesi direset.'
+  );
+
+  if (!konfirmasi) return;
+
+  const originalHTML = button.innerHTML;
+
+  button.disabled = true;
+  button.textContent = 'Memproses...';
+
+  try {
+    const result = await penggunaRequest(
+      'resetSessionPengguna',
+      {
+        targetUserId: userId
+      }
+    );
+
+    showAlert(
+      result.message || 'Sesi pengguna berhasil direset.'
+    );
+
+    await loadDataAkun();
+
+  } catch (error) {
+    console.error('Gagal mereset sesi:', error);
+
+    showAlert(
+      error.message || 'Gagal mereset sesi pengguna.',
+      'error'
+    );
+
+    button.disabled = false;
+    button.innerHTML = originalHTML;
+  }
 }
