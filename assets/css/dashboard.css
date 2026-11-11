@@ -1247,3 +1247,211 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+
+/* =====================================================
+   PENGGUNA & AKUN
+===================================================== */
+
+.pengguna-page {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.pengguna-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.pengguna-toolbar h2 {
+  margin: 0 0 6px;
+  color: #172b4d;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.pengguna-toolbar p,
+.pjlp-card-header p {
+  margin: 0;
+  color: #718096;
+  font-size: 13px;
+}
+
+.pengguna-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.pengguna-summary-card {
+  background: #fff;
+  border: 1px solid #e8edf4;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pengguna-summary-card span {
+  color: #718096;
+  font-size: 13px;
+}
+
+.pengguna-summary-card strong {
+  color: #172b4d;
+  font-size: 27px;
+  font-weight: 700;
+}
+
+.pengguna-table-toolbar {
+  padding: 16px 20px;
+}
+
+.pengguna-table-toolbar input {
+  width: 100%;
+  max-width: 380px;
+  padding: 11px 14px;
+  border: 1px solid #dce3ed;
+  border-radius: 8px;
+  outline: none;
+  font: inherit;
+  font-size: 13px;
+}
+
+.pengguna-table-toolbar input:focus {
+  border-color: #254b7a;
+  box-shadow: 0 0 0 3px rgba(37, 75, 122, 0.1);
+}
+
+.pengguna-id {
+  display: block;
+  margin-top: 4px;
+  color: #8995a7;
+  font-size: 11px;
+}
+
+.pengguna-status {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.pengguna-status.aktif {
+  color: #18794e;
+  background: #e6f6ee;
+}
+
+.pengguna-status.nonaktif {
+  color: #a33a3a;
+  background: #fdecec;
+}
+
+.pengguna-empty {
+  padding: 30px 15px !important;
+  text-align: center;
+  color: #8792a2;
+}
+
+.pengguna-empty button {
+  margin-top: 12px;
+}
+
+.pengguna-close-button {
+  border: 0;
+  background: transparent;
+  color: #64748b;
+  font-size: 27px;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.pengguna-password-info {
+  margin-top: 18px;
+  padding: 12px 14px;
+  background: #f1f5f9;
+  color: #526176;
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.pengguna-page .pjlp-modal {
+  max-width: 620px;
+}
+
+.pengguna-page .pjlp-modal-header p {
+  margin: 5px 0 0;
+  color: #718096;
+  font-size: 12px;
+}
+
+.pengguna-page .pjlp-form-group input,
+.pengguna-page .pjlp-form-group select {
+  width: 100%;
+  min-height: 42px;
+  padding: 10px 12px;
+  border: 1px solid #dce3ed;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 13px;
+  box-sizing: border-box;
+}
+
+.pengguna-page .pjlp-form-group input:focus,
+.pengguna-page .pjlp-form-group select:focus {
+  outline: none;
+  border-color: #254b7a;
+  box-shadow: 0 0 0 3px rgba(37, 75, 122, 0.1);
+}
+
+.pengguna-page button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+@media (max-width: 900px) {
+  .pengguna-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .pengguna-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .pengguna-toolbar .btn-primary {
+    width: 100%;
+  }
+
+  .pengguna-summary {
+    gap: 10px;
+  }
+
+  .pengguna-summary-card {
+    padding: 15px;
+  }
+
+  .pengguna-summary-card strong {
+    font-size: 23px;
+  }
+
+  .pengguna-page .pjlp-modal {
+    width: calc(100% - 24px);
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .pengguna-page .pjlp-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
